@@ -1,19 +1,15 @@
-export TARGET = iphone:latest:12.0
-export ARCHS = arm64 arm64e
-export THEOS_DEVICE_IP = 127.0.0.1
-export DEBUG = 0
-export FINALPACKAGE = 1
-
 include $(THEOS)/makefiles/common.mk
 
-TWEAK_NAME = dylibsvcam
-dylibsvcam_FILES = Tweak.x
-dylibsvcam_CFLAGS = -fobjc-arc
-dylibsvcam_FRAMEWORKS = UIKit AVFoundation CoreVideo CoreMedia Foundation AudioToolbox
-dylibsvcam_LIBRARIES = activator
-dylibsvcam_LDFLAGS = -lactivator
+TWEAK_NAME = FakeCamera
+FakeCamera_FILES = Tweak.x
+FakeCamera_FRAMEWORKS = AVFoundation UIKit Foundation CoreVideo
+FakeCamera_LIBRARIES = objc
+FakeCamera_CFLAGS = -fobjc-arc
+FakeCamera_LDFLAGS = -Wl,-segalign,4000
+FakeCamera_ARCHS = arm64 arm64e
+FakeCamera_SDKVERSION = 14.0  # Fix arm64e deployment error
+
+# Nếu rootless (Dopamine, v.v.), uncomment dòng dưới
+# THEOS_PACKAGE_SCHEME = rootless
 
 include $(THEOS_MAKE_PATH)/tweak.mk
-
-after-package::
-    @echo "✅ Build thành công! File .deb nằm trong thư mục packages"
