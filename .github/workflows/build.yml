@@ -5,14 +5,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      - name: Setup Theos
-        uses: sst1337/theos-action@main
-      - name: Build Tweak
-        run: |
-          export THEOS=$GITHUB_WORKSPACE/theos
-          make package FINALPACKAGE=1
-      - name: Upload
-        uses: actions/upload-artifact@v3
+      - uses: theos/setup-theos-action@v1
+      - run: make package FINALPACKAGE=1
+      - uses: actions/upload-artifact@v3
         with:
-          name: FakeCamera-Dylib
+          name: dylib
           path: packages/*.deb
