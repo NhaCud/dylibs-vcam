@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>title</key>
+    <string>Bật/Tắt VCAM Webcam</string>
+    <key>description</key>
+    <string>Biến iPhone thành webcam không dây</string>
+    <key>group</key>
+    <string>VCAM Webcam</string>
+    <key>class</key>
+    <string>VCAMListener</string>
+</dict>
+</plist>
