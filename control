@@ -1,9 +1,9 @@
-Package: com.yourname.fakecamera
-Name: FakeCamera
+Package: com.nhacud.vcam
+Name: VCAM Webcam
 Version: 1.0
 Architecture: iphoneos-arm
-Description: Fake video camera tweak using AVAssetReader for frame manipulation.
-Maintainer: NhaCud <your@email.com>
+Description: Biến iPhone thành webcam không dây
+Maintainer: NhaCud
 Author: NhaCud
 Section: Tweaks
-Depends: mobilesubstrate OR firmware (>= 14.0)  # Adjust tùy jailbreak
+Depends: mobilesubstrate, libactivator (>= 1.8.3)
