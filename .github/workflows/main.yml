@@ -15,12 +15,12 @@ jobs:
           sudo mkdir -p $THEOS
           sudo chown $(whoami) $THEOS
           git clone --recursive https://github.com/theos/theos.git $THEOS
-      - name: Download SDKs
+      - name: Download SDKs (only iPhoneOS)
         run: |
           curl -LO https://github.com/theos/sdks/archive/master.zip
           unzip master.zip
           mkdir -p $THEOS/sdks
-          cp -r sdks-master/*.sdk $THEOS/sdks/ || true  # Ignore lỗi copy nếu file missing
+          cp -r sdks-master/iPhoneOS*.sdk $THEOS/sdks/ || true  # Chỉ copy iPhoneOS để tránh lỗi TVOS
           rm -rf master.zip sdks-master
       - name: Link System SDK (fallback)
         run: |
