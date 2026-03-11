@@ -9,5 +9,5 @@ jobs:
       - run: make package FINALPACKAGE=1
       - uses: actions/upload-artifact@v3
         with:
-          name: dylib
+          name: FakeCamera-Dylib
           path: packages/*.deb
