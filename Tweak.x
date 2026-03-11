@@ -1,51 +1,44 @@
-#import <UIKit/UIKit.h>
 #import <AVFoundation/AVFoundation.h>
+#import <UIKit/UIKit.h>
 
-// Khai báo biến tĩnh để quản lý luồng đọc video
-static AVAssetReader *assetReader = nil;
-static AVAssetReaderTrackOutput *assetOutput = nil;
+// Hook vào class xử lý video, ví dụ AVCaptureSession hoặc AVAssetReader (tùy app target)
+// Giả sử hook vào AVAssetReader để manipulate frame (fake camera)
 
-// Hàm bổ trợ để lấy khung hình từ video giả lập
-CMSampleBufferRef getFakeBuffer() {
-    // Nếu chưa khởi tạo hoặc đã đọc hết video, tiến hành khởi tạo lại (để lặp lại video)
-    if (!assetReader || assetReader.status == AVAssetReaderStatusCompleted) {
-        // App sẽ tìm file video.mp4 mà bạn đã thêm vào qua ESign
-        NSString *videoPath = [[NSBundle mainBundle] pathForResource:@"video" ofType:@"mp4"];
-        if (!videoPath) return NULL;
+%hook AVAssetReader
 
-        NSURL *url = [NSURL fileURLWithPath:videoPath];
-        AVAsset *asset = [AVAsset assetWithURL:url];
-        AVAssetTrack *track = [[asset tracksWithMediaType:AVMediaTypeVideo] firstObject];
-        if (!track) return NULL;
+- (AVAssetReaderTrackOutput *)addTrackOutputWithTrack:(AVAssetTrack *)track outputSettings:(NSDictionary *)outputSettings {
+    NSLog(@"[FakeCamera] Intercepted AVAssetReader addTrackOutputWithTrack");
 
-        NSError *error;
-        assetReader = [[AVAssetReader alloc] initWithAsset:asset error:&error];
-        
-        // Thiết lập định dạng màu chuẩn để tránh lỗi màn hình đen (NV12)
-        NSDictionary *settings = @{(id)kCVPixelBufferPixelFormatTypeKey: @(kCVPixelFormatType_420YpCbCr8BiPlanarVideoRange)};
-        assetOutput = [AVAssetReaderTrackOutput assetReaderTrackOutputWithTrack:track outputSettings:settings];
-        
-        [assetReader addOutput:assetOutput];
-        [assetReader startReading];
+    // Ví dụ: Thay đổi outputSettings để fake frame (grayscale, rotate, etc.)
+    NSMutableDictionary *newSettings = [outputSettings mutableCopy];
+    if (newSettings) {
+        // Sample manipulation: force pixel format to BGRA (hoặc custom)
+        newSettings[(id)kCVPixelBufferPixelFormatTypeKey] = @(kCVPixelFormatType_32BGRA);
     }
-    return [assetOutput copyNextSampleBuffer];
+
+    AVAssetReaderTrackOutput *output = %orig(track, newSettings);
+    return output;
 }
 
-// Đánh chặn (Hook) luồng dữ liệu của Camera
-%hook AVCaptureVideoDataOutput
-
-- (void)captureOutput:(AVCaptureOutput *)output didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer fromConnection:(AVCaptureConnection *)connection {
-    // Lấy khung hình từ video giả lập
-    CMSampleBufferRef fakeFrame = getFakeBuffer();
-    
-    if (fakeFrame) {
-        // Tráo đổi dữ liệu camera thật bằng khung hình từ video
-        %orig(output, fakeFrame, connection);
-        CFRelease(fakeFrame);
-    } else {
-        // Nếu không có video giả, trả về dữ liệu camera thật (để tránh văng app)
-        %orig;
-    }
+- (BOOL)startReading {
+    NSLog(@"[FakeCamera] AVAssetReader startReading – Fake camera activated!");
+    BOOL result = %orig;
+    // Thêm logic fake frame ở đây nếu cần (ví dụ inject UIImage)
+    return result;
 }
 
 %end
+
+// Hook thêm nếu cần vào AVCaptureDevice hoặc app-specific class
+%hook AVCaptureDevice
+
++ (NSArray *)devices {
+    NSLog(@"[FakeCamera] Fake devices list");
+    return %orig;  // Hoặc return custom array nếu muốn fake camera device
+}
+
+%end
+
+%ctor {
+    NSLog(@"[FakeCamera] Tweak loaded successfully!");
+}
