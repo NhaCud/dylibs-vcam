@@ -1,21 +1,33 @@
 name: build
-on: [push, workflow_dispatch]
+on: [push, pull_request]
 jobs:
   main:
-    runs-on: ubuntu-latest
+    runs-on: macos-latest
+    env:
+      THEOS: theos
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
+      - uses: actions/checkout@v4
+      - name: Install Dependencies
+        run: brew install ldid make xz
       - name: Setup Theos
-        uses: theos/setup-theos-action@v1
-
-      - name: Build Tweak
-        run: |
-          make package FINALPACKAGE=1
-
-      - name: Upload Artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/checkout@v4
         with:
-          name: FakeCamera-Dylib
+          repository: theos/theos
+          path: theos
+          submodules: recursive
+      - name: Link System SDK
+        run: |
+          mkdir -p $THEOS/sdks
+          ln -s /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS.sdk $THEOS/sdks/iPhoneOS.sdk || true
+      - name: Debug - List Files & SDKs
+        run: |
+          ls -la
+          ls -la $THEOS/sdks || true
+          cat Makefile || true
+          cat control || true
+      - name: Build package
+        run: make package FINALPACKAGE=1
+      - uses: actions/upload-artifact@v4
+        with:
+          name: dylib
           path: packages/*.deb
