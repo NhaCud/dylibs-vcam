@@ -1,0 +1,11 @@
+Package: com.nhacud.vcam
+Name: VCAM Webcam
+Version: 1.0.0
+Architecture: iphoneos-arm
+Description: Biến iPhone thành webcam không dây qua Activator
+Maintainer: NhaCud
+Author: NhaCud
+Section: Tweaks
+Depends: mobilesubstrate, libactivator (>= 1.8.3)
+Icon: file:///Library/PreferenceBundles/VCAMPref.bundle/icon.png
+Tags: purpose::extension, compatible::ios12, compatible::ios13, compatible::ios14, compatible::ios15
