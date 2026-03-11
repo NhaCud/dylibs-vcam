@@ -1,33 +1,15 @@
-name: build
-on: [push, pull_request]
-jobs:
-  main:
-    runs-on: macos-latest
-    env:
-      THEOS: /opt/theos
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-      - name: Install Dependencies
-        run: brew install ldid make xz git
-      - name: Setup Theos
-        run: |
-          sudo mkdir -p $THEOS
-          sudo chown $(whoami) $THEOS
-          git clone --recursive https://github.com/theos/theos.git $THEOS
-      - name: Link System SDK
-        run: |
-          mkdir -p $THEOS/sdks
-          ln -s /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS.sdk $THEOS/sdks/iPhoneOS.sdk || true
-      - name: Debug - List Files & SDKs
-        run: |
-          ls -la
-          ls -la $THEOS/sdks || true
-          cat Makefile || true
-          cat control || true
-      - name: Build package
-        run: THEOS=$THEOS make package FINALPACKAGE=1
-      - uses: actions/upload-artifact@v4
-        with:
-          name: dylib
-          path: packages/*.deb
+include $(THEOS)/makefiles/common.mk
+
+TWEAK_NAME = FakeCamera
+FakeCamera_FILES = Tweak.x
+FakeCamera_FRAMEWORKS = AVFoundation UIKit Foundation CoreVideo
+FakeCamera_LIBRARIES = objc
+FakeCamera_CFLAGS = -fobjc-arc
+FakeCamera_LDFLAGS = -Wl,-segalign,4000
+FakeCamera_ARCHS = arm64 arm64e
+FakeCamera_SDKVERSION = 14.0  # Fix arm64e deployment error
+
+# Nếu rootless (Dopamine, v.v.), uncomment dòng dưới
+# THEOS_PACKAGE_SCHEME = rootless
+
+include $(THEOS_MAKE_PATH)/tweak.mk
