@@ -1,53 +1,39 @@
-name: Build Tweak
-
-on:
-  push:
-    branches: [ main, master ]
-  pull_request:
-    branches: [ main, master ]
-
+name: build
+on: [push, pull_request]
 jobs:
-  build:
+  main:
     runs-on: macos-latest
-    continue-on-error: false
-    
+    env:
+      THEOS: /opt/theos
     steps:
-    - name: Checkout repository
-      uses: actions/checkout@v4
-      with:
-        fetch-depth: 0
-
-    - name: Install Dependencies
-      run: |
-        brew update
-        brew install ldid xz fakeroot
-        sudo xcode-select -s /Applications/Xcode.app/Contents/Developer
-
-    - name: Setup Theos
-      run: |
-        sudo mkdir -p /opt/theos
-        sudo chown $(whoami) /opt/theos
-        git clone --recursive https://github.com/theos/theos.git /opt/theos
-        curl -LO https://github.com/theos/sdks/archive/master.zip
-        unzip master.zip
-        cp -r sdks-master/*.sdk /opt/theos/sdks/
-        rm -rf master.zip sdks-master
-
-    - name: Verify Theos
-      run: |
-        ls -la /opt/theos/
-        /opt/theos/bin/nic.pl --help
-
-    - name: Build Package
-      run: |
-        export THEOS=/opt/theos
-        make clean
-        make package DEBUG=0
-
-    - name: Upload Artifact
-      uses: actions/upload-artifact@v4
-      with:
-        name: dylibsvcam-deb
-        path: packages/*.deb
-        if-no-files-found: error
-        retention-days: 7
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      - name: Install Dependencies
+        run: brew install ldid make xz git
+      - name: Setup Theos
+        run: |
+          sudo mkdir -p $THEOS
+          sudo chown $(whoami) $THEOS
+          git clone --recursive https://github.com/theos/theos.git $THEOS
+      - name: Download SDKs
+        run: |
+          curl -LO https://github.com/theos/sdks/archive/master.zip
+          unzip master.zip
+          mkdir -p $THEOS/sdks
+          cp -r sdks-master/*.sdk $THEOS/sdks/ || true  # Ignore lỗi copy nếu file missing
+          rm -rf master.zip sdks-master
+      - name: Link System SDK (fallback)
+        run: |
+          ln -s /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS.sdk $THEOS/sdks/iPhoneOS.sdk || true
+      - name: Debug - List Files & SDKs
+        run: |
+          ls -la
+          ls -la $THEOS/sdks || true
+          cat Makefile || true
+          cat control || true
+      - name: Build package
+        run: THEOS=$THEOS make package FINALPACKAGE=1
+      - uses: actions/upload-artifact@v4
+        with:
+          name: dylib
+          path: packages/*.deb
