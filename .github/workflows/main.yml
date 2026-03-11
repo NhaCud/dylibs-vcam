@@ -19,7 +19,6 @@ jobs:
         run: |
           mkdir -p $THEOS/sdks
           ln -s /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS.sdk $THEOS/sdks/iPhoneOS.sdk || true
-          # Nếu cần SDK cũ, thêm thủ công: curl -LO https://github.com/theos/sdks/raw/master/iPhoneOS14.0.sdk.zip && unzip -d $THEOS/sdks/ || true
       - name: Debug - List Files & SDKs
         run: |
           ls -la
