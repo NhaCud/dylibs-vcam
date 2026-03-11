@@ -7,7 +7,7 @@ jobs:
       THEOS: theos
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4  # Thêm lại step này để pull code repo
+        uses: actions/checkout@v4
       - name: Install Dependencies
         run: brew install ldid make xz
       - name: Setup Theos
