@@ -2,15 +2,27 @@ name: build
 on: [push]
 jobs:
   main:
-    runs-on: ubuntu-latest
+    runs-on: macos-latest
+    env:
+      THEOS: theos
     steps:
       - uses: actions/checkout@v3
-      - uses: beerpiss/theos-action@v1
-      - run: make package FINALPACKAGE=1
+      - name: Install Dependencies
+        run: brew install ldid xz
+      - name: Setup Theos
+        uses: actions/checkout@v3
+        with:
+          repository: theos/theos
+          path: theos
+      - name: Download SDKs
+        run: |
+          curl -LO https://github.com/theos/sdks/archive/master.zip
+          unzip master.zip
+          mv sdks-master/*.sdk $THEOS/sdks
+          rm -r master.zip sdks-master
+      - name: Build package
+        run: make package FINALPACKAGE=1
       - uses: actions/upload-artifact@v3
         with:
           name: dylib
           path: packages/*.deb
-``` [[0]](grok://citation?card_id=4bb4e2&card_type=citation_card&type=render_inline_citation&citation_id=0)
-
-Tôi đã thay thế step setup Theos bằng action chính thức từ GitHub Marketplace, giúp bootstrap Theos trên runner Linux mà không cần config thêm. Workflow này giờ nên chạy mà không gặp lỗi về action không tồn tại, giả sử repo của bạn có Makefile hợp lệ cho Theos. Nếu vẫn fail (ví dụ do thiếu SDK hoặc dependencies cụ thể), kiểm tra logs và cung cấp thêm chi tiết.
