@@ -1,0 +1,9 @@
+Package: com.yourname.fakecamera
+Name: FakeCamera
+Depends: mobilesubstrate
+Version: 1.0.0
+Architecture: iphoneos-arm
+Description: Fake Camera Tweak
+Maintainer: Gemini
+Author: Gemini
+Section: Tweaks
