@@ -8,12 +8,13 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - name: Install Dependencies
-        run: brew install ldid xz
+        run: brew install ldid make xz
       - name: Setup Theos
         uses: actions/checkout@v3
         with:
           repository: theos/theos
           path: theos
+          submodules: recursive
       - name: Download SDKs
         run: |
           curl -LO https://github.com/theos/sdks/archive/master.zip
