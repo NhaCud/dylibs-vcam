@@ -2,7 +2,8 @@ include $(THEOS)/makefiles/common.mk
 
 TWEAK_NAME = FakeCamera
 FakeCamera_FILES = Tweak.x
-FakeCamera_FRAMEWORKS = AVFoundation UIKit Foundation
+FakeCamera_FRAMEWORKS = AVFoundation UIKit Foundation CoreVideo
+FakeCamera_LIBRARIES = objc
 FakeCamera_CFLAGS = -fobjc-arc
 FakeCamera_LDFLAGS = -Wl,-segalign,4000  # Optional cho alignment nếu cần
 
