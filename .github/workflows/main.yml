@@ -4,16 +4,12 @@ jobs:
   main:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
+      - uses: actions/checkout@v4
       - name: Setup Theos
         uses: theos/setup-theos-action@v1
-
       - name: Build Tweak
         run: |
           make package FINALPACKAGE=1
-
       - name: Upload Artifact
         uses: actions/upload-artifact@v4
         with:
