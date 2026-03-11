@@ -1,7 +1,7 @@
 name: build
 on: [push]
 jobs:
-  build:
+  main:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
@@ -9,5 +9,5 @@ jobs:
       - run: make package FINALPACKAGE=1
       - uses: actions/upload-artifact@v3
         with:
-          name: dylibs
+          name: dylib
           path: packages/*.deb
