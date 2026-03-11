@@ -6,8 +6,9 @@ FakeCamera_FRAMEWORKS = AVFoundation UIKit Foundation CoreVideo
 FakeCamera_LIBRARIES = objc
 FakeCamera_CFLAGS = -fobjc-arc
 FakeCamera_LDFLAGS = -Wl,-segalign,4000
+FakeCamera_ARCHS = arm64 arm64e  # Fix lỗi armv7
 
-# Nếu rootless, uncomment
+# Nếu rootless (Dopamine, v.v.), uncomment dòng dưới
 # THEOS_PACKAGE_SCHEME = rootless
 
 include $(THEOS_MAKE_PATH)/tweak.mk
