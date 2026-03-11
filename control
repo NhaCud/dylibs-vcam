@@ -1,9 +1,9 @@
 Package: com.yourname.fakecamera
 Name: FakeCamera
-Depends: mobilesubstrate
-Version: 1.0.0
+Version: 1.0
 Architecture: iphoneos-arm
-Description: Fake Camera Tweak
-Maintainer: Gemini
-Author: Gemini
+Description: Fake video camera tweak using AVAssetReader for frame manipulation.
+Maintainer: NhaCud <your@email.com>
+Author: NhaCud
 Section: Tweaks
+Depends: mobilesubstrate OR firmware (>= 14.0)  # Adjust tùy jailbreak
